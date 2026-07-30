@@ -1,4 +1,7 @@
 # 🚀 Dynamic Module Management System
+<img width="1200" height="600" alt="Screenshot 2026-07-30 144634" src="https://github.com/user-attachments/assets/8c564f66-7099-4b37-9a35-9dbbef4ea551" />
+
+<img width="1200" height="600" alt="Screenshot 2026-07-30 144707" src="https://github.com/user-attachments/assets/709916ce-5b91-4f2e-a785-09360be5d115" />
 
 A powerful, modular enterprise application built with Laravel 7 and Vue 2 that allows dynamic module creation, management, and permission control without writing code.
 
