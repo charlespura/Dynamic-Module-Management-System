@@ -10,3 +10,335 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+
+# Laravel specific
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+/.env
+/.env.backup
+/.env.production
+/.env.local
+/.env.*.local
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# PHPUnit
+/.phpunit.result.cache
+/.phpunit.cache
+/phpunit.xml
+/.phpstorm.meta.php
+/_ide_helper.php
+/_ide_helper_models.php
+
+# Composer
+/composer.phar
+/composer.lock
+
+# Laravel Mix / Webpack
+/mix-manifest.json
+/public/css/*
+/public/js/*
+/public/mix-manifest.json
+/public/js/app.js
+/public/css/app.css
+/public/js/app.js.map
+/public/css/app.css.map
+/public/js/manifest.js
+/public/js/vendor.js
+/public/js/*.map
+
+# Bootstrap / Vite
+/public/build
+/public/css
+/public/js
+/public/fonts
+/public/images
+/public/img
+/public/favicon.ico
+
+# Laravel Telescope
+/storage/telescope
+
+# Laravel Dusk
+/tests/Browser/console/
+/tests/Browser/screenshots/
+/tests/Browser/*.log
+
+# PHP CS Fixer
+/.php_cs
+/.php_cs.cache
+
+# IDE
+/.idea
+/.vscode
+/*.iml
+/*.iws
+/*.ipr
+/.project
+/.settings
+/.classpath
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+/storage/logs/*
+!/storage/logs/.gitkeep
+
+# Sessions
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitkeep
+
+# Cache
+/storage/framework/cache/*
+!/storage/framework/cache/.gitkeep
+/storage/framework/views/*
+!/storage/framework/views/.gitkeep
+
+# Testing
+/coverage
+/phpunit.xml
+/phpunit.xml.bak
+/.phpunit.result.cache
+/.phpunit.cache
+
+# Deployment
+/.env
+/.env.*
+!/.env.example
+/.vapor
+/.terraform
+/.serverless
+
+# Redis
+*.rdb
+
+# MySQL
+*.sql
+*.sqlite
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+
+# NPM
+/node_modules
+/npm-debug.log
+/yarn-debug.log
+/yarn-error.log
+/package-lock.json
+/yarn.lock
+
+# Composer
+/composer.phar
+/composer.lock
+/vendor
+
+# Laravel Spark
+/spark
+
+# Laravel Nova
+/nova
+
+# PHPUnit
+/.phpunit.result.cache
+/.phpunit.cache
+
+# IDE specific
+/.idea
+/.vscode
+/*.iml
+/*.iws
+/*.ipr
+/.project
+/.settings
+/.classpath
+
+# OS X
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Logs and reports
+*.log
+/storage/logs/*
+!/storage/logs/.gitkeep
+*.report
+/reports
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+*.swp
+*.swo
+*~
+.#*
+
+# Certificates
+*.pem
+*.crt
+*.key
+*.p12
+*.pfx
+
+# Docker
+/.docker
+/docker-compose.override.yml
+/docker-compose.override.yaml
+/.dockerignore
+
+# Kubernetes
+/kubeconfig
+/*.kubeconfig
+
+# Terraform
+/.terraform
+/*.tfstate
+/*.tfstate.*
+
+# Backup files
+*.backup
+*.bak
+*.old
+*.orig
+
+# Environment specific
+/.env.*.local
+/.env.*.php
+/.env.backup
+/.env.production
+/.env.staging
+/.env.development
+/.env.testing
+
+# Laravel Ignition
+/_ignition
+
+# Laravel Octane
+/.octane
+
+# PHPStan
+/phpstan.neon
+/phpstan.neon.dist
+
+# Psalm
+/psalm.xml
+/psalm.xml.dist
+/psalm-baseline.xml
+
+# PHP-CS-Fixer
+/.php-cs-fixer.cache
+/.php_cs.cache
+
+# PHP Insights
+/phpinsights.php
+/phpinsights
+
+# Pest
+/pest
+/pest.xml
+
+# Laravel Dusk
+/tests/Browser/console/
+/tests/Browser/screenshots/
+/tests/Browser/*.log
+
+# Laravel Envoyer
+/.envoyer
+
+# Laravel Shift
+/.shift
+
+# GitHub
+/.github
+/.gitattributes
+
+# Code coverage
+/coverage
+/coverage.xml
+/coverage.clover
+/coverage.cov
+/cobertura.xml
+/phpunit.coverage.xml
+/.coverage
+
+# PHPStan
+/phpstan.neon
+/phpstan.neon.dist
+
+# PhpStorm
+/.phpstorm.meta.php
+/_ide_helper.php
+/_ide_helper_models.php
+
+# Package Managers
+/npm-debug.log
+/yarn-error.log
+/package-lock.json
+/yarn.lock
+/composer.lock
+/composer.phar
+
+# Compiled files
+*.class
+*.jar
+*.war
+*.ear
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Archives
+*.zip
+*.rar
+*.tar.gz
+*.tgz
+*.7z
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+*.mdb
+*.accdb
+*.sql
+*.dump
+
+# Miscellaneous
+/.bash_history
+/.bashrc
+/.zshrc
+/.profile
+/.npmrc
+/.yarnrc
+/.editorconfig
+/.env
+/.gitattributes

@@ -2180,21 +2180,8 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
   },
   created: function created() {
     this.fetchMenus();
-    this.fetchParentMenus();
   },
   methods: {
-    getDepth: function getDepth(menu) {
-      var depth = 0;
-      var parent = menu.parent_id;
-      while (parent) {
-        depth++;
-        var found = this.menus.find(function (m) {
-          return m.id === parent;
-        });
-        parent = found ? found.parent_id : null;
-      }
-      return depth;
-    },
     fetchMenus: function fetchMenus() {
       var _this = this;
       return _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
@@ -2208,45 +2195,33 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
             case 1:
               response = _context.v;
               _this.menus = response.data.data;
+              _this.parentMenus = response.data.data.filter(function (m) {
+                return m.parent_id === null;
+              });
               _context.n = 3;
               break;
             case 2:
               _context.p = 2;
               _t = _context.v;
               console.error('Error fetching menus:', _t);
-              alert('Error loading menus');
             case 3:
               return _context.a(2);
           }
         }, _callee, null, [[0, 2]]);
       }))();
     },
-    fetchParentMenus: function fetchParentMenus() {
-      var _this2 = this;
-      return _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
-        var response, _t2;
-        return _regenerator().w(function (_context2) {
-          while (1) switch (_context2.p = _context2.n) {
-            case 0:
-              _context2.p = 0;
-              _context2.n = 1;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('/menus');
-            case 1:
-              response = _context2.v;
-              _this2.parentMenus = response.data.data.filter(function (m) {
-                return m.parent_id === null;
-              });
-              _context2.n = 3;
-              break;
-            case 2:
-              _context2.p = 2;
-              _t2 = _context2.v;
-              console.error('Error fetching parent menus:', _t2);
-            case 3:
-              return _context2.a(2);
-          }
-        }, _callee2, null, [[0, 2]]);
-      }))();
+    addSubmenu: function addSubmenu(menu) {
+      this.editingMenu = null;
+      this.form = {
+        name: '',
+        parent_id: menu.id,
+        icon: '',
+        route: '',
+        component: '',
+        sort_order: 0,
+        status: 1
+      };
+      this.showAddModal = true;
     },
     editMenu: function editMenu(menu) {
       this.editingMenu = menu;
@@ -2267,79 +2242,76 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       };
     },
     saveMenu: function saveMenu() {
-      var _this3 = this;
-      return _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3() {
-        var response, _error$response, _t3;
-        return _regenerator().w(function (_context3) {
-          while (1) switch (_context3.p = _context3.n) {
+      var _this2 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
+        var response, _error$response, _t2;
+        return _regenerator().w(function (_context2) {
+          while (1) switch (_context2.p = _context2.n) {
             case 0:
-              _context3.p = 0;
-              if (!_this3.editingMenu) {
-                _context3.n = 2;
+              _context2.p = 0;
+              if (!_this2.editingMenu) {
+                _context2.n = 2;
                 break;
               }
-              _context3.n = 1;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default.a.put("/menus/".concat(_this3.editingMenu.id), _this3.form);
+              _context2.n = 1;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default.a.put("/menus/".concat(_this2.editingMenu.id), _this2.form);
             case 1:
-              response = _context3.v;
-              _context3.n = 4;
+              response = _context2.v;
+              _context2.n = 4;
               break;
             case 2:
-              _context3.n = 3;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('/menus', _this3.form);
+              _context2.n = 3;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('/menus', _this2.form);
             case 3:
-              response = _context3.v;
+              response = _context2.v;
             case 4:
-              alert(response.data.message || 'Menu saved successfully');
-              _this3.closeModal();
-              _this3.fetchMenus();
-              _this3.fetchParentMenus();
-              // Refresh sidebar
-              _this3.$store.dispatch('fetchMenus');
-              _context3.n = 6;
+              alert(response.data.message || 'Menu saved successfully!');
+              _this2.closeModal();
+              _this2.fetchMenus();
+              _this2.$store.dispatch('fetchMenus');
+              _context2.n = 6;
               break;
             case 5:
-              _context3.p = 5;
-              _t3 = _context3.v;
-              alert('Error saving menu: ' + (((_error$response = _t3.response) === null || _error$response === void 0 || (_error$response = _error$response.data) === null || _error$response === void 0 ? void 0 : _error$response.message) || _t3.message));
+              _context2.p = 5;
+              _t2 = _context2.v;
+              alert('Error saving menu: ' + (((_error$response = _t2.response) === null || _error$response === void 0 || (_error$response = _error$response.data) === null || _error$response === void 0 ? void 0 : _error$response.message) || _t2.message));
             case 6:
-              return _context3.a(2);
+              return _context2.a(2);
           }
-        }, _callee3, null, [[0, 5]]);
+        }, _callee2, null, [[0, 5]]);
       }))();
     },
     deleteMenu: function deleteMenu(id) {
-      var _this4 = this;
-      return _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4() {
-        var response, _error$response2, _t4;
-        return _regenerator().w(function (_context4) {
-          while (1) switch (_context4.p = _context4.n) {
+      var _this3 = this;
+      return _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3() {
+        var response, _error$response2, _t3;
+        return _regenerator().w(function (_context3) {
+          while (1) switch (_context3.p = _context3.n) {
             case 0:
               if (confirm('Are you sure you want to delete this menu?')) {
-                _context4.n = 1;
+                _context3.n = 1;
                 break;
               }
-              return _context4.a(2);
+              return _context3.a(2);
             case 1:
-              _context4.p = 1;
-              _context4.n = 2;
+              _context3.p = 1;
+              _context3.n = 2;
               return axios__WEBPACK_IMPORTED_MODULE_0___default.a["delete"]("/menus/".concat(id));
             case 2:
-              response = _context4.v;
-              alert(response.data.message || 'Menu deleted successfully');
-              _this4.fetchMenus();
-              _this4.fetchParentMenus();
-              _this4.$store.dispatch('fetchMenus');
-              _context4.n = 4;
+              response = _context3.v;
+              alert(response.data.message);
+              _this3.fetchMenus();
+              _this3.$store.dispatch('fetchMenus');
+              _context3.n = 4;
               break;
             case 3:
-              _context4.p = 3;
-              _t4 = _context4.v;
-              alert('Error deleting menu: ' + (((_error$response2 = _t4.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.message) || _t4.message));
+              _context3.p = 3;
+              _t3 = _context3.v;
+              alert('Error deleting menu: ' + (((_error$response2 = _t3.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.message) || _t3.message));
             case 4:
-              return _context4.a(2);
+              return _context3.a(2);
           }
-        }, _callee4, null, [[1, 3]]);
+        }, _callee3, null, [[1, 3]]);
       }))();
     }
   }
@@ -2443,21 +2415,56 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   created: function created() {
+    // Load saved state from localStorage
+    var savedState = localStorage.getItem('openMenus');
+    if (savedState) {
+      try {
+        var parsed = JSON.parse(savedState);
+        this.openMenus = new Set(parsed);
+      } catch (e) {
+        this.openMenus = new Set();
+      }
+    }
+
+    // Fetch menus
     this.$store.dispatch('fetchMenus');
+  },
+  watch: {
+    menus: function menus(newMenus) {
+      // Auto-open Settings if it has children
+      var settingsMenu = newMenus.find(function (m) {
+        return m.name === 'Settings';
+      });
+      if (settingsMenu && settingsMenu.children && settingsMenu.children.length) {
+        if (!this.openMenus.has(settingsMenu.id)) {
+          this.openMenus.add(settingsMenu.id);
+          this.saveState();
+        }
+      }
+    }
   },
   methods: {
     toggleMenu: function toggleMenu(menu) {
+      // Toggle the menu state
       if (this.openMenus.has(menu.id)) {
         this.openMenus["delete"](menu.id);
       } else {
         this.openMenus.add(menu.id);
       }
+      this.saveState();
+
+      // Force Vue to re-render
+      this.$forceUpdate();
     },
     isOpen: function isOpen(menu) {
       return this.openMenus.has(menu.id);
     },
     isActive: function isActive(menu) {
       return this.$route.path === menu.route;
+    },
+    saveState: function saveState() {
+      var state = Array.from(this.openMenus);
+      localStorage.setItem('openMenus', JSON.stringify(state));
     }
   }
 });
@@ -2876,7 +2883,9 @@ __webpack_require__.r(__webpack_exports__);
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", [_c("h2", [_vm._v("Menu Management")]), _vm._v(" "), _c("button", {
+  return _c("div", [_c("h2", [_vm._v("Menu Management")]), _vm._v(" "), _c("p", {
+    staticClass: "text-muted"
+  }, [_vm._v("Create and manage modules and submodules")]), _vm._v(" "), _c("button", {
     staticClass: "btn btn-primary mb-3",
     on: {
       click: function click($event) {
@@ -2885,94 +2894,103 @@ var render = function render() {
     }
   }, [_c("i", {
     staticClass: "fa fa-plus"
-  }), _vm._v(" Add New Menu\n    ")]), _vm._v(" "), _c("div", {
+  }), _vm._v(" Add New Module\n    ")]), _vm._v(" "), _c("div", {
     staticClass: "card"
   }, [_c("div", {
     staticClass: "card-body"
+  }, [_c("h5", [_vm._v("Module Structure")]), _vm._v(" "), _vm.menus.length === 0 ? _c("div", {
+    staticClass: "alert alert-info"
+  }, [_vm._v('\n                No modules found. Click "Add New Module" to create one.\n            ')]) : _c("ul", {
+    staticClass: "list-unstyled"
   }, _vm._l(_vm.menus, function (menu) {
-    return _c("div", {
+    return _c("li", {
       key: menu.id,
       staticClass: "menu-item"
     }, [_c("div", {
-      staticClass: "menu-row",
-      style: {
-        paddingLeft: _vm.getDepth(menu) * 20 + "px"
-      }
+      staticClass: "menu-item-header"
     }, [_c("i", {
       "class": "fa fa-" + menu.icon
-    }), _vm._v(" "), _c("span", {
-      staticClass: "menu-name"
-    }, [_vm._v(_vm._s(menu.name))]), _vm._v(" "), _c("span", {
+    }), _vm._v(" "), _c("strong", [_vm._v(_vm._s(menu.name))]), _vm._v(" "), _c("span", {
+      staticClass: "badge badge-secondary ml-2"
+    }, [_vm._v(_vm._s(menu.route || "No route"))]), _vm._v(" "), _c("span", {
       staticClass: "badge",
       "class": menu.status ? "badge-success" : "badge-danger"
-    }, [_vm._v("\n                        " + _vm._s(menu.status ? "Active" : "Inactive") + "\n                    ")]), _vm._v(" "), _c("span", {
-      staticClass: "menu-route"
-    }, [_vm._v(_vm._s(menu.route))]), _vm._v(" "), _c("div", {
-      staticClass: "menu-actions"
+    }, [_vm._v("\n                            " + _vm._s(menu.status ? "Active" : "Inactive") + "\n                        ")]), _vm._v(" "), _c("div", {
+      staticClass: "float-right"
     }, [_c("button", {
-      staticClass: "btn btn-sm btn-info",
+      staticClass: "btn btn-sm btn-primary",
+      on: {
+        click: function click($event) {
+          return _vm.addSubmenu(menu);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa fa-plus"
+    }), _vm._v(" Add Sub\n                            ")]), _vm._v(" "), _c("button", {
+      staticClass: "btn btn-sm btn-warning",
       on: {
         click: function click($event) {
           return _vm.editMenu(menu);
         }
       }
-    }, [_vm._v("Edit")]), _vm._v(" "), _c("button", {
+    }, [_c("i", {
+      staticClass: "fa fa-edit"
+    })]), _vm._v(" "), _c("button", {
       staticClass: "btn btn-sm btn-danger",
       on: {
         click: function click($event) {
           return _vm.deleteMenu(menu.id);
         }
       }
-    }, [_vm._v("Delete")])])]), _vm._v(" "), menu.children && menu.children.length ? _c("div", _vm._l(menu.children, function (child) {
-      return _c("div", {
+    }, [_c("i", {
+      staticClass: "fa fa-trash"
+    })])])]), _vm._v(" "), menu.children && menu.children.length ? _c("ul", {
+      staticClass: "submenu-list"
+    }, _vm._l(menu.children, function (child) {
+      return _c("li", {
         key: child.id,
-        staticClass: "menu-item"
-      }, [_c("div", {
-        staticClass: "menu-row",
-        style: {
-          paddingLeft: _vm.getDepth(child) * 20 + "px"
-        }
+        staticClass: "submenu-item"
       }, [_c("i", {
         "class": "fa fa-" + child.icon
-      }), _vm._v(" "), _c("span", {
-        staticClass: "menu-name"
-      }, [_vm._v(_vm._s(child.name))]), _vm._v(" "), _c("span", {
-        staticClass: "badge",
-        "class": child.status ? "badge-success" : "badge-danger"
-      }, [_vm._v("\n                                " + _vm._s(child.status ? "Active" : "Inactive") + "\n                            ")]), _vm._v(" "), _c("span", {
-        staticClass: "menu-route"
+      }), _vm._v("\n                            " + _vm._s(child.name) + "\n                            "), _c("span", {
+        staticClass: "badge badge-secondary ml-2"
       }, [_vm._v(_vm._s(child.route))]), _vm._v(" "), _c("div", {
-        staticClass: "menu-actions"
+        staticClass: "float-right"
       }, [_c("button", {
-        staticClass: "btn btn-sm btn-info",
+        staticClass: "btn btn-sm btn-warning",
         on: {
           click: function click($event) {
             return _vm.editMenu(child);
           }
         }
-      }, [_vm._v("Edit")]), _vm._v(" "), _c("button", {
+      }, [_c("i", {
+        staticClass: "fa fa-edit"
+      })]), _vm._v(" "), _c("button", {
         staticClass: "btn btn-sm btn-danger",
         on: {
           click: function click($event) {
             return _vm.deleteMenu(child.id);
           }
         }
-      }, [_vm._v("Delete")])])])]);
+      }, [_c("i", {
+        staticClass: "fa fa-trash"
+      })])])]);
     }), 0) : _vm._e()]);
-  }), 0)]), _vm._v(" "), _vm.showAddModal ? _c("div", {
-    staticClass: "modal",
-    "class": {
-      show: _vm.showAddModal
+  }), 0)])]), _vm._v(" "), _vm.showAddModal ? _c("div", {
+    staticClass: "modal-overlay",
+    on: {
+      click: function click($event) {
+        if ($event.target !== $event.currentTarget) return null;
+        return _vm.closeModal.apply(null, arguments);
+      }
     }
   }, [_c("div", {
-    staticClass: "modal-dialog"
-  }, [_c("div", {
-    staticClass: "modal-content"
+    staticClass: "modal-container"
   }, [_c("div", {
     staticClass: "modal-header"
   }, [_c("h5", {
     staticClass: "modal-title"
-  }, [_vm._v(_vm._s(_vm.editingMenu ? "Edit Menu" : "Add New Menu"))]), _vm._v(" "), _c("button", {
+  }, [_vm._v(_vm._s(_vm.editingMenu ? "Edit Menu" : "Add New Module"))]), _vm._v(" "), _c("button", {
     staticClass: "close",
     attrs: {
       type: "button"
@@ -2983,6 +3001,7 @@ var render = function render() {
   }, [_vm._v("×")])]), _vm._v(" "), _c("div", {
     staticClass: "modal-body"
   }, [_c("form", {
+    staticClass: "modal-form",
     on: {
       submit: function submit($event) {
         $event.preventDefault();
@@ -2991,7 +3010,7 @@ var render = function render() {
     }
   }, [_c("div", {
     staticClass: "form-group"
-  }, [_c("label", [_vm._v("Menu Name *")]), _vm._v(" "), _c("input", {
+  }, [_c("label", [_vm._v("Module Name *")]), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -3013,7 +3032,7 @@ var render = function render() {
     }
   })]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_c("label", [_vm._v("Parent Menu")]), _vm._v(" "), _c("select", {
+  }, [_c("label", [_vm._v("Parent Module")]), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -3036,13 +3055,13 @@ var render = function render() {
     attrs: {
       value: ""
     }
-  }, [_vm._v("None (Top Level)")]), _vm._v(" "), _vm._l(_vm.parentMenus, function (menu) {
+  }, [_vm._v("None (Top Level Module)")]), _vm._v(" "), _vm._l(_vm.parentMenus, function (menu) {
     return _c("option", {
       key: menu.id,
       domProps: {
         value: menu.id
       }
-    }, [_vm._v("\n                                    " + _vm._s(menu.name) + "\n                                ")]);
+    }, [_vm._v("\n                                " + _vm._s(menu.name) + "\n                            ")]);
   })], 2)]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
   }, [_c("label", [_vm._v("Icon")]), _vm._v(" "), _c("input", {
@@ -3065,7 +3084,9 @@ var render = function render() {
         _vm.$set(_vm.form, "icon", $event.target.value);
       }
     }
-  }), _vm._v(" "), _vm._m(0)]), _vm._v(" "), _c("div", {
+  }), _vm._v(" "), _c("small", {
+    staticClass: "text-muted"
+  }, [_vm._v("Font Awesome icon name (without fa- prefix)")])]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
   }, [_c("label", [_vm._v("Route")]), _vm._v(" "), _c("input", {
     directives: [{
@@ -3087,7 +3108,9 @@ var render = function render() {
         _vm.$set(_vm.form, "route", $event.target.value);
       }
     }
-  })]), _vm._v(" "), _c("div", {
+  }), _vm._v(" "), _c("small", {
+    staticClass: "text-muted"
+  }, [_vm._v("The URL path for this module")])]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
   }, [_c("label", [_vm._v("Component")]), _vm._v(" "), _c("input", {
     directives: [{
@@ -3109,7 +3132,9 @@ var render = function render() {
         _vm.$set(_vm.form, "component", $event.target.value);
       }
     }
-  })]), _vm._v(" "), _c("div", {
+  }), _vm._v(" "), _c("small", {
+    staticClass: "text-muted"
+  }, [_vm._v("The Vue component name")])]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
   }, [_c("label", [_vm._v("Sort Order")]), _vm._v(" "), _c("input", {
     directives: [{
@@ -3160,12 +3185,9 @@ var render = function render() {
     domProps: {
       value: 0
     }
-  }, [_vm._v("Inactive")])])]), _vm._v(" "), _c("button", {
-    staticClass: "btn btn-success",
-    attrs: {
-      type: "submit"
-    }
-  }, [_vm._v(_vm._s(_vm.editingMenu ? "Update" : "Create"))]), _vm._v(" "), _c("button", {
+  }, [_vm._v("Inactive")])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal-footer"
+  }, [_c("button", {
     staticClass: "btn btn-secondary",
     attrs: {
       type: "button"
@@ -3173,22 +3195,14 @@ var render = function render() {
     on: {
       click: _vm.closeModal
     }
-  }, [_vm._v("Cancel")])])])])])]) : _vm._e(), _vm._v(" "), _vm.showAddModal ? _c("div", {
-    staticClass: "modal-backdrop"
-  }) : _vm._e()]);
-};
-var staticRenderFns = [function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("small", {
-    staticClass: "text-muted"
-  }, [_vm._v("Font Awesome icons: "), _c("a", {
+  }, [_vm._v("Cancel")]), _vm._v(" "), _c("button", {
+    staticClass: "btn btn-success",
     attrs: {
-      href: "https://fontawesome.com/v4/icons/",
-      target: "_blank"
+      type: "submit"
     }
-  }, [_vm._v("View icons")])]);
-}];
+  }, [_vm._v(_vm._s(_vm.editingMenu ? "Update" : "Create"))])])])])])]) : _vm._e()]);
+};
+var staticRenderFns = [];
 render._withStripped = true;
 
 
@@ -3346,25 +3360,27 @@ var render = function render() {
     return _c("li", {
       key: menu.id,
       staticClass: "nav-item"
-    }, [_c("a", {
+    }, [menu.children && menu.children.length ? [_c("div", {
       staticClass: "nav-link",
       "class": {
         active: _vm.isActive(menu)
       },
+      staticStyle: {
+        cursor: "pointer"
+      },
       on: {
         click: function click($event) {
-          $event.preventDefault();
           return _vm.toggleMenu(menu);
         }
       }
     }, [_c("i", {
       "class": "fa fa-" + menu.icon
-    }), _vm._v("\n                " + _vm._s(menu.name) + "\n                "), menu.children && menu.children.length ? _c("span", {
+    }), _vm._v(" "), _c("span", [_vm._v(_vm._s(menu.name))]), _vm._v(" "), _c("span", {
       staticClass: "arrow"
     }, [_c("i", {
       staticClass: "fa",
       "class": _vm.isOpen(menu) ? "fa-chevron-down" : "fa-chevron-right"
-    })]) : _vm._e()]), _vm._v(" "), menu.children && menu.children.length ? _c("ul", {
+    })])]), _vm._v(" "), _c("ul", {
       directives: [{
         name: "show",
         rawName: "v-show",
@@ -3377,15 +3393,23 @@ var render = function render() {
         key: child.id,
         staticClass: "nav-item"
       }, [_c("router-link", {
-        staticClass: "nav-link",
+        staticClass: "nav-link sub-link",
         attrs: {
           to: child.route,
           "active-class": "active"
         }
       }, [_c("i", {
         "class": "fa fa-" + child.icon
-      }), _vm._v("\n                        " + _vm._s(child.name) + "\n                    ")])], 1);
-    }), 0) : _vm._e()]);
+      }), _vm._v("\n                            " + _vm._s(child.name) + "\n                        ")])], 1);
+    }), 0)] : [_c("router-link", {
+      staticClass: "nav-link",
+      attrs: {
+        to: menu.route,
+        "active-class": "active"
+      }
+    }, [_c("i", {
+      "class": "fa fa-" + menu.icon
+    }), _vm._v("\n                    " + _vm._s(menu.name) + "\n                ")])]], 2);
   }), 0)]);
 };
 var staticRenderFns = [function () {
@@ -7937,7 +7961,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.menu-item[data-v-78617599] {\n    border-bottom: 1px solid #eee;\n}\n.menu-row[data-v-78617599] {\n    display: flex;\n    align-items: center;\n    padding: 10px 15px;\n    gap: 15px;\n}\n.menu-row[data-v-78617599]:hover {\n    background: #f5f5f5;\n}\n.menu-name[data-v-78617599] {\n    font-weight: 500;\n    min-width: 150px;\n}\n.menu-route[data-v-78617599] {\n    color: #666;\n    font-size: 0.9em;\n    flex: 1;\n}\n.menu-actions[data-v-78617599] {\n    display: flex;\n    gap: 5px;\n}\n.menu-actions .btn[data-v-78617599] {\n    padding: 2px 10px;\n    font-size: 0.8em;\n}\n.badge[data-v-78617599] {\n    font-size: 0.7em;\n    padding: 3px 8px;\n}\n.modal.show[data-v-78617599] {\n    display: block;\n}\n.modal-backdrop[data-v-78617599] {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background: rgba(0,0,0,0.5);\n    z-index: 1040;\n}\n.modal[data-v-78617599] {\n    z-index: 1050;\n}\n", ""]);
+exports.push([module.i, "\n.menu-item[data-v-78617599] {\n    padding: 10px;\n    border-bottom: 1px solid #eee;\n}\n.menu-item-header[data-v-78617599] {\n    padding: 8px;\n    background: #f8f9fa;\n    border-radius: 4px;\n}\n.submenu-list[data-v-78617599] {\n    margin-left: 30px;\n    padding-left: 15px;\n    border-left: 2px solid #dee2e6;\n}\n.submenu-item[data-v-78617599] {\n    padding: 8px;\n    margin: 4px 0;\n    background: #fff;\n    border-radius: 4px;\n    border: 1px solid #eee;\n}\n\n/* Modal Styles - Fixed Scrolling */\n.modal-overlay[data-v-78617599] {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background: rgba(0, 0, 0, 0.5);\n    z-index: 9999;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    padding: 20px;\n    overflow: hidden;\n}\n.modal-container[data-v-78617599] {\n    background: white;\n    border-radius: 8px;\n    max-width: 600px;\n    width: 100%;\n    max-height: 90vh;\n    display: flex;\n    flex-direction: column;\n    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);\n    overflow: hidden;\n}\n.modal-header[data-v-78617599] {\n    padding: 15px 20px;\n    border-bottom: 1px solid #dee2e6;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    flex-shrink: 0;\n    background: white;\n    z-index: 10;\n}\n.modal-header .close[data-v-78617599] {\n    font-size: 28px;\n    font-weight: bold;\n    cursor: pointer;\n    background: none;\n    border: none;\n    color: #000;\n    opacity: 0.5;\n    padding: 0 10px;\n}\n.modal-header .close[data-v-78617599]:hover {\n    opacity: 1;\n}\n.modal-body[data-v-78617599] {\n    padding: 20px;\n    overflow-y: auto;\n    flex: 1;\n    max-height: calc(90vh - 130px);\n}\n.modal-form[data-v-78617599] {\n    padding-bottom: 10px;\n}\n.form-group[data-v-78617599] {\n    margin-bottom: 15px;\n}\n.form-group label[data-v-78617599] {\n    display: block;\n    margin-bottom: 5px;\n    font-weight: 600;\n}\n.form-control[data-v-78617599] {\n    width: 100%;\n    padding: 8px 12px;\n    border: 1px solid #ced4da;\n    border-radius: 4px;\n    font-size: 14px;\n}\n.form-control[data-v-78617599]:focus {\n    border-color: #80bdff;\n    outline: 0;\n    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);\n}\n.text-muted[data-v-78617599] {\n    color: #6c757d;\n    font-size: 12px;\n    display: block;\n    margin-top: 4px;\n}\n.modal-footer[data-v-78617599] {\n    padding: 15px 0 0 0;\n    border-top: 1px solid #dee2e6;\n    display: flex;\n    justify-content: flex-end;\n    gap: 10px;\n    flex-shrink: 0;\n    margin-top: 10px;\n}\n.btn[data-v-78617599] {\n    padding: 8px 20px;\n    border: none;\n    border-radius: 4px;\n    cursor: pointer;\n    font-size: 14px;\n    transition: all 0.2s;\n}\n.btn-success[data-v-78617599] {\n    background: #28a745;\n    color: white;\n}\n.btn-success[data-v-78617599]:hover {\n    background: #218838;\n}\n.btn-secondary[data-v-78617599] {\n    background: #6c757d;\n    color: white;\n}\n.btn-secondary[data-v-78617599]:hover {\n    background: #5a6268;\n}\n.btn-primary[data-v-78617599] {\n    background: #007bff;\n    color: white;\n}\n.btn-primary[data-v-78617599]:hover {\n    background: #0069d9;\n}\n.btn-warning[data-v-78617599] {\n    background: #ffc107;\n    color: #212529;\n}\n.btn-danger[data-v-78617599] {\n    background: #dc3545;\n    color: white;\n}\n.btn-sm[data-v-78617599] {\n    padding: 4px 8px;\n    font-size: 12px;\n}\n.float-right[data-v-78617599] {\n    float: right;\n}\n.ml-2[data-v-78617599] {\n    margin-left: 8px;\n}\n.mb-3[data-v-78617599] {\n    margin-bottom: 15px;\n}\n.badge[data-v-78617599] {\n    padding: 4px 8px;\n    border-radius: 4px;\n    font-size: 12px;\n}\n.badge-success[data-v-78617599] {\n    background: #28a745;\n    color: white;\n}\n.badge-danger[data-v-78617599] {\n    background: #dc3545;\n    color: white;\n}\n.badge-secondary[data-v-78617599] {\n    background: #6c757d;\n    color: white;\n}\n.badge-info[data-v-78617599] {\n    background: #17a2b8;\n    color: white;\n}\n.badge-primary[data-v-78617599] {\n    background: #007bff;\n    color: white;\n}\n.badge-warning[data-v-78617599] {\n    background: #ffc107;\n    color: #212529;\n}\n.alert[data-v-78617599] {\n    padding: 12px 20px;\n    border-radius: 4px;\n}\n.alert-info[data-v-78617599] {\n    background: #d1ecf1;\n    color: #0c5460;\n    border: 1px solid #bee5eb;\n}\n", ""]);
 
 // exports
 
@@ -7956,7 +7980,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.sidebar[data-v-81fbb27e] {\n    height: 100vh;\n    overflow-y: auto;\n    background: #2c3e50;\n}\n.sidebar-header[data-v-81fbb27e] {\n    padding: 20px;\n    background: #1a252f;\n    color: white;\n    text-align: center;\n}\n.sidebar-header h4[data-v-81fbb27e] {\n    margin: 0;\n}\n.nav-link[data-v-81fbb27e] {\n    color: #8aa4b8;\n    padding: 12px 20px;\n    cursor: pointer;\n}\n.nav-link[data-v-81fbb27e]:hover {\n    color: white;\n    background: #1a252f;\n}\n.nav-link.active[data-v-81fbb27e] {\n    color: white;\n    background: #1a252f;\n}\n.nav-link i[data-v-81fbb27e] {\n    margin-right: 10px;\n    width: 20px;\n    text-align: center;\n}\n.arrow[data-v-81fbb27e] {\n    float: right;\n}\n.sub-menu[data-v-81fbb27e] {\n    background: #1a252f;\n}\n.sub-menu .nav-link[data-v-81fbb27e] {\n    padding-left: 45px;\n    font-size: 0.9em;\n}\n", ""]);
+exports.push([module.i, "\n.sidebar[data-v-81fbb27e] {\n    height: 100vh;\n    overflow-y: auto;\n    background: #2c3e50;\n}\n.sidebar-header[data-v-81fbb27e] {\n    padding: 20px;\n    background: #1a252f;\n    color: white;\n    text-align: center;\n}\n.sidebar-header h4[data-v-81fbb27e] {\n    margin: 0;\n}\n.nav-link[data-v-81fbb27e] {\n    color: #8aa4b8;\n    padding: 12px 20px;\n    display: block;\n    text-decoration: none;\n    -webkit-user-select: none;\n       -moz-user-select: none;\n            user-select: none;\n    transition: all 0.2s;\n}\n.nav-link[data-v-81fbb27e]:hover {\n    color: white;\n    background: #1a252f;\n    text-decoration: none;\n}\n.nav-link.active[data-v-81fbb27e] {\n    color: white;\n    background: #1a252f;\n}\n.nav-link i[data-v-81fbb27e] {\n    margin-right: 10px;\n    width: 20px;\n    text-align: center;\n    pointer-events: none;\n}\n.nav-link span[data-v-81fbb27e] {\n    pointer-events: none;\n}\n.arrow[data-v-81fbb27e] {\n    float: right;\n    pointer-events: none;\n}\n.arrow i[data-v-81fbb27e] {\n    pointer-events: none;\n}\n.sub-menu[data-v-81fbb27e] {\n    background: #1a252f;\n    list-style: none;\n    padding-left: 0;\n    margin: 0;\n}\n.sub-menu .nav-link[data-v-81fbb27e] {\n    padding-left: 45px;\n    font-size: 0.9em;\n}\n.sub-menu .nav-link[data-v-81fbb27e]:hover {\n    background: #0f1a24;\n}\n", ""]);
 
 // exports
 
