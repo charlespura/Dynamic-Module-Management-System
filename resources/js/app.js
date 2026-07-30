@@ -88,6 +88,10 @@ const routes = [
 { path: '/projects/active', component: ActiveProjects, name: 'active-projects', meta: { requiresAuth: true } },
 { path: '/projects/completed', component: CompletedProjects, name: 'completed-projects', meta: { requiresAuth: true } },
 { path: '/projects/reports', component: ProjectReports, name: 'project-reports', meta: { requiresAuth: true } },
+// Add these routes to the routes array
+{ path: '/projects', component: Projects, name: 'projects', meta: { requiresAuth: true } },
+{ path: '/projects/active', component: ActiveProjects, name: 'active-projects', meta: { requiresAuth: true } },
+{ path: '/projects/completed', component: CompletedProjects, name: 'completed-projects', meta: { requiresAuth: true } },
     { path: '*', redirect: '/dashboard' }
 ];
 

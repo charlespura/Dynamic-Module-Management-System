@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\MenuController;
 use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\ProjectController;
 
 // Public routes
 Route::post('login', [AuthController::class, 'login']);
@@ -31,5 +32,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [RoleController::class, 'update']);
         Route::delete('/{id}', [RoleController::class, 'destroy']);
         Route::post('/{id}/permissions', [RoleController::class, 'assignPermissions']);
+    });
+
+    // =============================================
+    // PROJECT ROUTES - ADD THIS SECTION
+    // =============================================
+    Route::prefix('projects')->group(function () {
+        Route::get('/', [ProjectController::class, 'index']);
+        Route::get('/active', [ProjectController::class, 'active']);
+        Route::get('/completed', [ProjectController::class, 'completed']);
+        Route::get('/stats', [ProjectController::class, 'stats']);
+        Route::get('/{id}', [ProjectController::class, 'show']);
+        Route::post('/', [ProjectController::class, 'store']);
+        Route::put('/{id}', [ProjectController::class, 'update']);
+        Route::delete('/{id}', [ProjectController::class, 'destroy']);
     });
 });
