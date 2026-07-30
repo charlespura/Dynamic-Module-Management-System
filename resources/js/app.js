@@ -30,6 +30,11 @@ import HR from './components/HR.vue';
 import Finance from './components/Finance.vue';
 import Inventory from './components/Inventory.vue';
 import Settings from './components/Settings.vue';
+// Add these imports with the other imports
+import Projects from './components/Projects.vue';
+import ActiveProjects from './components/ActiveProjects.vue';
+import CompletedProjects from './components/CompletedProjects.vue';
+import ProjectReports from './components/ProjectReports.vue';
 
 // Set base URL for axios
 axios.defaults.baseURL = '/api';
@@ -78,6 +83,11 @@ const routes = [
     { path: '/settings/users', component: Users, name: 'users', meta: { requiresAuth: true } },
     { path: '/settings/roles', component: Roles, name: 'roles', meta: { requiresAuth: true } },
     { path: '/settings/menus', component: Menus, name: 'menus', meta: { requiresAuth: true } },
+ 
+{ path: '/projects', component: Projects, name: 'projects', meta: { requiresAuth: true } },
+{ path: '/projects/active', component: ActiveProjects, name: 'active-projects', meta: { requiresAuth: true } },
+{ path: '/projects/completed', component: CompletedProjects, name: 'completed-projects', meta: { requiresAuth: true } },
+{ path: '/projects/reports', component: ProjectReports, name: 'project-reports', meta: { requiresAuth: true } },
     { path: '*', redirect: '/dashboard' }
 ];
 
