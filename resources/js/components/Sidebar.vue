@@ -1,7 +1,7 @@
 ﻿<template>
     <div class="sidebar">
         <div class="sidebar-header">
-            <h4>System</h4>
+            <h4>Dynamic Module Management System</h4>
         </div>
         <ul class="nav flex-column">
             <li v-for="menu in menus" :key="menu.id" class="nav-item">
