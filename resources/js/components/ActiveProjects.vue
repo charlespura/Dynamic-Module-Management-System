@@ -4,6 +4,7 @@
         <div class="card">
             <div class="card-body">
                 <p>List of currently active projects</p>
+                <!-- loading -->
                 <div v-if="loading" class="text-center">
                     <i class="fa fa-spinner fa-spin"></i> Loading...
                 </div>
