@@ -4512,7 +4512,7 @@ var staticRenderFns = [function () {
     _c = _vm._self._c;
   return _c("div", {
     staticClass: "sidebar-header"
-  }, [_c("h4", [_vm._v("System")])]);
+  }, [_c("h4", [_vm._v("Dynamic Module Management System")])]);
 }];
 render._withStripped = true;
 
