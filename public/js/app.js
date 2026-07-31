@@ -1981,20 +1981,143 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     Sidebar: _Sidebar_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
+  data: function data() {
+    return {
+      isSidebarOpen: false,
+      isMobile: false,
+      windowWidth: window.innerWidth
+    };
+  },
   computed: {
     authenticated: function authenticated() {
       return this.$store.state.authenticated;
-    }
-  },
-  methods: {
-    logout: function logout() {
-      this.$store.dispatch('logout');
-      this.$router.push('/login');
+    },
+    user: function user() {
+      return this.$store.state.user;
+    },
+    currentRoute: function currentRoute() {
+      return this.$route.path;
     }
   },
   created: function created() {
     if (this.authenticated) {
       this.$store.dispatch('fetchMenus');
+    }
+    this.checkMobile();
+    window.addEventListener('resize', this.handleResize);
+
+    // Load sidebar state from localStorage
+    var savedState = localStorage.getItem('sidebarOpen');
+    if (savedState !== null) {
+      this.isSidebarOpen = JSON.parse(savedState);
+    }
+  },
+  beforeDestroy: function beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+  },
+  watch: {
+    '$route': function $route() {
+      // Close sidebar on mobile when route changes
+      if (this.isMobile) {
+        this.isSidebarOpen = false;
+        this.saveState();
+      }
+    }
+  },
+  methods: {
+    toggleSidebar: function toggleSidebar() {
+      this.isSidebarOpen = !this.isSidebarOpen;
+      this.saveState();
+
+      // Prevent body scroll when sidebar is open on mobile
+      if (this.isMobile) {
+        document.body.style.overflow = this.isSidebarOpen ? 'hidden' : '';
+      }
+    },
+    checkMobile: function checkMobile() {
+      this.isMobile = window.innerWidth <= 768;
+      if (this.isMobile) {
+        this.isSidebarOpen = false;
+        document.body.style.overflow = '';
+      }
+    },
+    handleResize: function handleResize() {
+      this.windowWidth = window.innerWidth;
+      var wasMobile = this.isMobile;
+      this.checkMobile();
+      if (!this.isMobile && wasMobile) {
+        var savedState = localStorage.getItem('sidebarOpen');
+        if (savedState !== null) {
+          this.isSidebarOpen = JSON.parse(savedState);
+        }
+      }
+    },
+    saveState: function saveState() {
+      localStorage.setItem('sidebarOpen', JSON.stringify(this.isSidebarOpen));
+    },
+    logout: function logout() {
+      this.$store.dispatch('logout');
+      this.$router.push('/login');
+      if (this.isMobile) {
+        document.body.style.overflow = '';
+      }
+    },
+    getPageTitle: function getPageTitle() {
+      var _this = this;
+      var titles = {
+        '/dashboard': 'Dashboard',
+        '/projects': 'Projects',
+        '/projects/active': 'Active Projects',
+        '/projects/completed': 'Completed Projects',
+        '/settings': 'Settings',
+        '/settings/users': 'User Management',
+        '/settings/roles': 'Role Management',
+        '/settings/menus': 'Menu Management',
+        '/hr': 'HR Module',
+        '/hr/employees': 'Employees',
+        '/hr/attendance': 'Attendance',
+        '/hr/payroll': 'Payroll',
+        '/finance': 'Finance Module',
+        '/finance/expenses': 'Expenses',
+        '/finance/reports': 'Reports',
+        '/inventory': 'Inventory Module',
+        '/inventory/products': 'Products',
+        '/inventory/suppliers': 'Suppliers'
+      };
+      if (titles[this.currentRoute]) {
+        return titles[this.currentRoute];
+      }
+      var route = Object.keys(titles).find(function (key) {
+        return _this.currentRoute.startsWith(key);
+      });
+      return route ? titles[route] : 'Dashboard';
+    },
+    getPageSubtitle: function getPageSubtitle() {
+      var _this2 = this;
+      var subtitles = {
+        '/dashboard': 'Overview',
+        '/projects': 'Manage your projects',
+        '/projects/active': 'Currently active projects',
+        '/projects/completed': 'Finished projects',
+        '/settings': 'System configuration',
+        '/settings/users': 'Manage system users',
+        '/settings/roles': 'Manage roles and permissions',
+        '/settings/menus': 'Create and manage modules',
+        '/hr': 'Human Resources',
+        '/hr/employees': 'Manage employees',
+        '/hr/attendance': 'Track attendance',
+        '/hr/payroll': 'Manage payroll',
+        '/finance': 'Financial Management',
+        '/finance/expenses': 'Track expenses',
+        '/finance/reports': 'Financial reports',
+        '/inventory': 'Inventory Management',
+        '/inventory/products': 'Manage products',
+        '/inventory/suppliers': 'Manage suppliers'
+      };
+      var route = Object.keys(subtitles).find(function (key) {
+        return _this2.currentRoute.startsWith(key);
+      });
+      return route ? subtitles[route] : '';
     }
   }
 });
@@ -2962,21 +3085,73 @@ var render = function render() {
       id: "app"
     }
   }, [_vm.authenticated ? _c("div", [_c("div", {
-    staticClass: "container-fluid"
+    staticClass: "app-container"
   }, [_c("div", {
-    staticClass: "row"
+    staticClass: "sidebar-wrapper",
+    "class": {
+      "sidebar-open": _vm.isSidebarOpen
+    }
+  }, [_c("Sidebar", {
+    ref: "sidebar"
+  })], 1), _vm._v(" "), _vm.isSidebarOpen && _vm.isMobile ? _c("div", {
+    staticClass: "mobile-overlay",
+    on: {
+      click: _vm.toggleSidebar
+    }
+  }) : _vm._e(), _vm._v(" "), _c("div", {
+    staticClass: "main-content",
+    "class": {
+      "main-content-shifted": _vm.isSidebarOpen && !_vm.isMobile
+    }
   }, [_c("div", {
-    staticClass: "col-md-2 sidebar-wrapper"
-  }, [_c("Sidebar")], 1), _vm._v(" "), _c("div", {
-    staticClass: "col-md-10 main-content"
-  }, [_c("div", {
-    staticClass: "top-bar"
+    staticClass: "mobile-header"
   }, [_c("button", {
-    staticClass: "btn btn-danger float-right",
+    staticClass: "mobile-menu-btn",
+    on: {
+      click: _vm.toggleSidebar
+    }
+  }, [_c("i", {
+    staticClass: "fa",
+    "class": _vm.isSidebarOpen ? "fa-times" : "fa-bars"
+  })]), _vm._v(" "), _c("span", {
+    staticClass: "mobile-title"
+  }, [_vm._v("Dynamic Module System")]), _vm._v(" "), _c("button", {
+    staticClass: "mobile-logout-btn",
     on: {
       click: _vm.logout
     }
-  }, [_vm._v("Logout")])]), _vm._v(" "), _c("router-view")], 1)])])]) : _c("div", [_c("router-view")], 1)]);
+  }, [_c("i", {
+    staticClass: "fa fa-sign-out"
+  })])]), _vm._v(" "), _c("div", {
+    staticClass: "top-bar"
+  }, [_c("div", {
+    staticClass: "top-bar-left"
+  }, [_c("h5", {
+    staticClass: "page-title"
+  }, [_c("span", {
+    staticClass: "title-text"
+  }, [_vm._v(_vm._s(_vm.getPageTitle()))]), _vm._v(" "), _c("small", {
+    staticClass: "title-subtitle"
+  }, [_vm._v(_vm._s(_vm.getPageSubtitle()))])])]), _vm._v(" "), _c("div", {
+    staticClass: "top-bar-right"
+  }, [_c("span", {
+    staticClass: "user-info"
+  }, [_c("i", {
+    staticClass: "fa fa-user-circle"
+  }), _vm._v(" "), _c("span", {
+    staticClass: "user-name"
+  }, [_vm._v(_vm._s(_vm.user ? _vm.user.name : "Admin"))])]), _vm._v(" "), _c("button", {
+    staticClass: "btn btn-danger btn-logout",
+    on: {
+      click: _vm.logout
+    }
+  }, [_c("i", {
+    staticClass: "fa fa-sign-out"
+  }), _vm._v(" "), _c("span", {
+    staticClass: "logout-text"
+  }, [_vm._v("Logout")])])])]), _vm._v(" "), _c("div", {
+    staticClass: "content-area"
+  }, [_c("router-view")], 1)])])]) : _c("div", [_c("router-view")], 1)]);
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -8843,7 +9018,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.sidebar-wrapper {\n    padding: 0;\n    min-height: 100vh;\n    background: #2c3e50;\n}\n.main-content {\n    padding: 20px;\n    background: #f5f7fa;\n    min-height: 100vh;\n}\n.top-bar {\n    margin-bottom: 20px;\n    padding: 10px;\n    background: white;\n    border-radius: 5px;\n    box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n}\n", ""]);
+exports.push([module.i, "\n/* ============================================\n   GLOBAL RESET\n   ============================================ */\n* {\n    box-sizing: border-box;\n}\nhtml, body {\n    margin: 0;\n    padding: 0;\n    font-family: 'Nunito', sans-serif;\n    background: #f5f7fa;\n    overflow-x: hidden;\n}\n\n/* ============================================\n   APP CONTAINER\n   ============================================ */\n.app-container {\n    display: flex;\n    min-height: 100vh;\n    position: relative;\n    width: 100%;\n}\n\n/* ============================================\n   SIDEBAR WRAPPER\n   ============================================ */\n.sidebar-wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 260px;\n    height: 100vh;\n    z-index: 1000;\n    background: #2c3e50;\n    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);\n    overflow-y: auto;\n    overflow-x: hidden;\n    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);\n    flex-shrink: 0;\n}\n\n/* ============================================\n   MAIN CONTENT\n   ============================================ */\n.main-content {\n    flex: 1;\n    margin-left: 260px;\n    padding: 20px 30px;\n    min-height: 100vh;\n    background: #f5f7fa;\n    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);\n    width: calc(100% - 260px);\n    position: relative;\n}\n\n/* ============================================\n   MOBILE HEADER\n   ============================================ */\n.mobile-header {\n    display: none;\n    position: sticky;\n    top: 0;\n    z-index: 500;\n    background: #2c3e50;\n    color: white;\n    padding: 12px 16px;\n    align-items: center;\n    justify-content: space-between;\n    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);\n    min-height: 56px;\n    width: 100%;\n}\n.mobile-menu-btn {\n    background: none;\n    border: none;\n    color: white;\n    font-size: 22px;\n    padding: 4px 8px;\n    cursor: pointer;\n    border-radius: 4px;\n    transition: background 0.2s;\n    z-index: 1001;\n}\n.mobile-menu-btn:hover {\n    background: rgba(255, 255, 255, 0.1);\n}\n.mobile-title {\n    font-size: 16px;\n    font-weight: 600;\n    flex: 1;\n    text-align: center;\n}\n.mobile-logout-btn {\n    background: none;\n    border: none;\n    color: white;\n    font-size: 18px;\n    padding: 4px 8px;\n    cursor: pointer;\n    border-radius: 4px;\n    transition: background 0.2s;\n}\n.mobile-logout-btn:hover {\n    background: rgba(255, 255, 255, 0.1);\n}\n\n/* ============================================\n   MOBILE OVERLAY\n   ============================================ */\n.mobile-overlay {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background: rgba(0, 0, 0, 0.5);\n    z-index: 999;\n    animation: fadeIn 0.3s ease;\n    display: none;\n}\n\n/* ============================================\n   TOP BAR\n   ============================================ */\n.top-bar {\n    background: white;\n    padding: 12px 20px;\n    border-radius: 12px;\n    margin-bottom: 20px;\n    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    flex-wrap: wrap;\n    gap: 12px;\n    width: 100%;\n}\n.top-bar-left {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n}\n.page-title {\n    margin: 0;\n    font-size: 20px;\n    font-weight: 700;\n    color: #2c3e50;\n    display: flex;\n    align-items: center;\n    gap: 10px;\n    flex-wrap: wrap;\n}\n.title-text {\n    font-weight: 700;\n}\n.title-subtitle {\n    font-weight: 400;\n    font-size: 14px;\n    color: #6c757d;\n    margin-left: 6px;\n}\n.top-bar-right {\n    display: flex;\n    align-items: center;\n    gap: 16px;\n}\n.user-info {\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    color: #2c3e50;\n    font-weight: 500;\n    font-size: 14px;\n}\n.user-info i {\n    font-size: 20px;\n    color: #667eea;\n}\n.user-name {\n    font-weight: 600;\n}\n.btn-logout {\n    padding: 8px 20px;\n    border: none;\n    border-radius: 8px;\n    font-weight: 600;\n    font-size: 14px;\n    cursor: pointer;\n    transition: all 0.2s;\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    background: #dc3545;\n    color: white;\n}\n.btn-logout:hover {\n    background: #c82333;\n    transform: translateY(-1px);\n    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);\n}\n.btn-logout i {\n    font-size: 14px;\n}\n\n/* ============================================\n   CONTENT AREA\n   ============================================ */\n.content-area {\n    background: transparent;\n    min-height: calc(100vh - 180px);\n    width: 100%;\n}\n\n/* ============================================\n   RESPONSIVE STYLES\n   ============================================ */\n\n/* Tablets and smaller laptops */\n@media (max-width: 1024px) {\n.sidebar-wrapper {\n        width: 240px;\n}\n.main-content {\n        margin-left: 240px;\n        padding: 16px 20px;\n        width: calc(100% - 240px);\n}\n.page-title {\n        font-size: 18px;\n}\n}\n\n/* Mobile devices */\n@media (max-width: 768px) {\n.mobile-header {\n        display: flex !important;\n}\n.sidebar-wrapper {\n        position: fixed !important;\n        width: 280px !important;\n        transform: translateX(-100%) !important;\n        box-shadow: none !important;\n        border-radius: 0 !important;\n        top: 0 !important;\n        height: 100vh !important;\n        z-index: 1000 !important;\n        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;\n}\n.sidebar-wrapper.sidebar-open {\n        transform: translateX(0) !important;\n        box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3) !important;\n        border-radius: 0 12px 12px 0 !important;\n}\n.main-content {\n        margin-left: 0 !important;\n        padding: 12px !important;\n        padding-top: 0 !important;\n        width: 100% !important;\n        min-height: 100vh !important;\n}\n.top-bar {\n        padding: 12px 16px;\n        flex-direction: column;\n        align-items: stretch;\n        gap: 8px;\n        border-radius: 8px;\n        margin-top: 12px;\n}\n.top-bar-left {\n        justify-content: center;\n}\n.top-bar-right {\n        justify-content: center;\n        flex-wrap: wrap;\n}\n.page-title {\n        font-size: 16px;\n        justify-content: center;\n}\n.title-subtitle {\n        font-size: 12px;\n}\n.user-info .user-name {\n        display: inline;\n}\n.logout-text {\n        display: inline;\n}\n.btn-logout {\n        padding: 6px 14px;\n        font-size: 13px;\n}\n.mobile-overlay {\n        display: block !important;\n}\n}\n\n/* Small mobile devices */\n@media (max-width: 480px) {\n.sidebar-wrapper {\n        width: 260px !important;\n}\n.main-content {\n        padding: 10px !important;\n}\n.top-bar {\n        padding: 10px 12px;\n        margin-top: 8px;\n}\n.page-title {\n        font-size: 14px;\n}\n.title-subtitle {\n        font-size: 11px;\n        display: block;\n        margin-left: 0;\n}\n.btn-logout {\n        padding: 4px 12px;\n        font-size: 12px;\n}\n.user-info {\n        font-size: 12px;\n}\n.user-info i {\n        font-size: 16px;\n}\n.mobile-title {\n        font-size: 14px;\n}\n.mobile-menu-btn {\n        font-size: 18px;\n}\n.mobile-logout-btn {\n        font-size: 16px;\n}\n}\n\n/* Landscape mobile */\n@media (max-width: 768px) and (orientation: landscape) {\n.sidebar-wrapper {\n        width: 220px !important;\n}\n.mobile-title {\n        font-size: 14px;\n}\n.top-bar {\n        padding: 8px 12px;\n        margin-top: 8px;\n}\n}\n\n/* Very small screens */\n@media (max-width: 360px) {\n.sidebar-wrapper {\n        width: 240px !important;\n}\n.page-title {\n        font-size: 13px;\n        flex-direction: column;\n        align-items: center;\n        gap: 2px;\n}\n.top-bar-right {\n        flex-wrap: wrap;\n        justify-content: center;\n}\n.btn-logout {\n        padding: 4px 10px;\n        font-size: 11px;\n}\n.user-name {\n        display: none;\n}\n}\n\n/* Desktop with open sidebar */\n@media (min-width: 769px) {\n.sidebar-wrapper {\n        transform: translateX(0) !important;\n}\n.mobile-overlay {\n        display: none !important;\n}\n.main-content {\n        margin-left: 260px;\n}\n}\n\n/* ============================================\n   ANIMATIONS\n   ============================================ */\n@keyframes fadeIn {\nfrom { opacity: 0;\n}\nto { opacity: 1;\n}\n}\n@keyframes slideInRight {\nfrom { transform: translateX(-100%); opacity: 0;\n}\nto { transform: translateX(0); opacity: 1;\n}\n}\n\n/* ============================================\n   ACCESSIBILITY\n   ============================================ */\n@media (prefers-reduced-motion: reduce) {\n.sidebar-wrapper,\n    .main-content,\n    .mobile-overlay {\n        animation-duration: 0.01ms !important;\n        transition-duration: 0.01ms !important;\n}\n}\n\n/* High contrast mode */\n@media (prefers-contrast: high) {\n.btn-logout {\n        border: 2px solid #dc3545;\n}\n.top-bar {\n        border: 1px solid #dee2e6;\n}\n}\n\n/* ============================================\n   SCROLLBAR STYLES\n   ============================================ */\n::-webkit-scrollbar {\n    width: 6px;\n    height: 6px;\n}\n::-webkit-scrollbar-track {\n    background: #f1f1f1;\n    border-radius: 10px;\n}\n::-webkit-scrollbar-thumb {\n    background: #888;\n    border-radius: 10px;\n}\n::-webkit-scrollbar-thumb:hover {\n    background: #555;\n}\n* {\n    scrollbar-width: thin;\n    scrollbar-color: #888 #f1f1f1;\n}\n", ""]);
 
 // exports
 
