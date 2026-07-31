@@ -30,7 +30,6 @@ import HR from './components/HR.vue';
 import Finance from './components/Finance.vue';
 import Inventory from './components/Inventory.vue';
 import Settings from './components/Settings.vue';
-// Add these imports with the other imports
 import Projects from './components/Projects.vue';
 import ActiveProjects from './components/ActiveProjects.vue';
 import CompletedProjects from './components/CompletedProjects.vue';
@@ -51,6 +50,11 @@ axios.interceptors.request.use(function (config) {
 });
 
 // Handle response errors
+const router = new VueRouter({
+    mode: 'history',
+    routes: [] // Will be defined after
+});
+
 axios.interceptors.response.use(
     response => response,
     error => {
@@ -83,23 +87,16 @@ const routes = [
     { path: '/settings/users', component: Users, name: 'users', meta: { requiresAuth: true } },
     { path: '/settings/roles', component: Roles, name: 'roles', meta: { requiresAuth: true } },
     { path: '/settings/menus', component: Menus, name: 'menus', meta: { requiresAuth: true } },
- 
-{ path: '/projects', component: Projects, name: 'projects', meta: { requiresAuth: true } },
-{ path: '/projects/active', component: ActiveProjects, name: 'active-projects', meta: { requiresAuth: true } },
-{ path: '/projects/completed', component: CompletedProjects, name: 'completed-projects', meta: { requiresAuth: true } },
-{ path: '/projects/reports', component: ProjectReports, name: 'project-reports', meta: { requiresAuth: true } },
-// Add these routes to the routes array
-{ path: '/projects', component: Projects, name: 'projects', meta: { requiresAuth: true } },
-{ path: '/projects/active', component: ActiveProjects, name: 'active-projects', meta: { requiresAuth: true } },
-{ path: '/projects/completed', component: CompletedProjects, name: 'completed-projects', meta: { requiresAuth: true } },
+    { path: '/projects', component: Projects, name: 'projects', meta: { requiresAuth: true } },
+    { path: '/projects/active', component: ActiveProjects, name: 'active-projects', meta: { requiresAuth: true } },
+    { path: '/projects/completed', component: CompletedProjects, name: 'completed-projects', meta: { requiresAuth: true } },
+    { path: '/projects/reports', component: ProjectReports, name: 'project-reports', meta: { requiresAuth: true } },
     { path: '*', redirect: '/dashboard' }
 ];
 
-// Create router
-const router = new VueRouter({
-    mode: 'history',
-    routes: routes
-});
+// Update router with routes
+router.options.routes = routes;
+router.matcher = new VueRouter({ mode: 'history', routes }).matcher;
 
 // Navigation guard
 router.beforeEach((to, from, next) => {
@@ -199,4 +196,30 @@ new Vue({
     router,
     store,
     render: h => h(App)
+});
+
+// PWA: Register Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(function(registration) {
+                console.log('PWA: Service Worker registered');
+            })
+            .catch(function(error) {
+                console.log('PWA: Service Worker registration failed', error);
+            });
+    });
+}
+
+// PWA: Check for update and prompt install
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    console.log('PWA: App can be installed');
+});
+
+window.addEventListener('appinstalled', function(evt) {
+    console.log('PWA: App installed successfully');
 });

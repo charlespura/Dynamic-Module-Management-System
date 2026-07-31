@@ -40,6 +40,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       }
     };
   },
+  
   created: function created() {
     this.fetchMenus();
     this.fetchParentMenus();

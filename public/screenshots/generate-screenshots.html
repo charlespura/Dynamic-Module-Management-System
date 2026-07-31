@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Screenshots</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f7fa; text-align: center; }
+        .btn { background: #667eea; color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 18px; margin: 10px; }
+        .btn:hover { background: #5a67d8; }
+        .preview { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 20px; }
+        .preview-item { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+        canvas { border-radius: 8px; border: 1px solid #ddd; }
+        .success { color: #28a745; }
+    </style>
+</head>
+<body>
+    <h1>📸 PWA Screenshot Generator</h1>
+    <button class="btn" onclick="generateAndDownload()">📸 Generate & Download Screenshots</button>
+    <div id="status"></div>
+    <div class="preview" id="preview"></div>
+
+    <script>
+        function createDesktop() {
+            const c = document.createElement('canvas');
+            c.width = 1280; c.height = 720;
+            const ctx = c.getContext('2d');
+            
+            // Background
+            const grad = ctx.createLinearGradient(0,0,1280,720);
+            grad.addColorStop(0, '#667eea');
+            grad.addColorStop(1, '#764ba2');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,1280,720);
+            
+            // App window
+            ctx.fillStyle = 'rgba(255,255,255,0.95)';
+            roundRect(ctx, 40, 40, 1200, 640, 20);
+            ctx.fill();
+            
+            // Sidebar
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(40,40,280,640);
+            
+            // Sidebar content
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Arial';
+            ctx.fillText('System', 80, 100);
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#8aa4b8';
+            ['Dashboard','HR','Finance','Inventory','Settings'].forEach((item,i) => {
+                ctx.fillText(item, 80, 160 + i*40);
+            });
+            
+            // Content
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 28px Arial';
+            ctx.fillText('Dashboard', 360, 100);
+            
+            // Stats
+            const stats = [['Employees','125','#667eea'],['Modules','12','#56ab2f'],['Users','8','#f7971e'],['Status','Online','#4facfe']];
+            stats.forEach((s,i) => {
+                ctx.fillStyle = s[2];
+                roundRect(ctx, 360+i*210, 140, 180, 100, 12);
+                ctx.fill();
+                ctx.fillStyle = 'white';
+                ctx.font = '16px Arial';
+                ctx.fillText(s[0], 380+i*210, 180);
+                ctx.font = 'bold 32px Arial';
+                ctx.fillText(s[1], 380+i*210, 220);
+            });
+            
+            // Table
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = '16px Arial';
+            ctx.fillText('Recent Projects', 360, 300);
+            ctx.fillStyle = 'white';
+            roundRect(ctx, 360, 320, 840, 280, 8);
+            ctx.fill();
+            
+            ctx.fillStyle = '#6c757d';
+            ctx.font = '14px Arial';
+            ['ID','Project','Status','Deadline'].forEach((h,i) => ctx.fillText(h, 380+i*200, 350));
+            
+            const projects = [['1','Website Redesign','Active','2024-12-31'],['2','Mobile App','In Progress','2024-11-15'],['3','Database Migration','Completed','2024-10-01']];
+            projects.forEach((p,i) => {
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = '14px Arial';
+                ctx.fillText(p[0], 380, 390+i*50);
+                ctx.fillText(p[1], 450, 390+i*50);
+                ctx.fillText(p[2], 650, 390+i*50);
+                ctx.fillText(p[3], 850, 390+i*50);
+            });
+            
+            return c;
+        }
+
+        function createMobile() {
+            const c = document.createElement('canvas');
+            c.width = 360; c.height = 640;
+            const ctx = c.getContext('2d');
+            
+            // Background
+            const grad = ctx.createLinearGradient(0,0,360,640);
+            grad.addColorStop(0, '#667eea');
+            grad.addColorStop(1, '#764ba2');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,360,640);
+            
+            // Phone frame
+            ctx.fillStyle = '#1a1a1a';
+            roundRect(ctx, 10, 10, 340, 620, 30);
+            ctx.fill();
+            
+            // Screen
+            ctx.fillStyle = '#f5f7fa';
+            roundRect(ctx, 20, 20, 320, 600, 20);
+            ctx.fill();
+            
+            // Header
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(20,20,320,50);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('System', 35, 55);
+            
+            // Dashboard
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('Dashboard', 35, 110);
+            
+            // Stats
+            const stats = [['Employees','125','#667eea'],['Modules','12','#56ab2f'],['Users','8','#f7971e']];
+            stats.forEach((s,i) => {
+                ctx.fillStyle = s[2];
+                roundRect(ctx, 35, 140+i*70, 290, 55, 10);
+                ctx.fill();
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Arial';
+                ctx.fillText(s[0], 55, 175+i*70);
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText(s[1], 290, 178+i*70);
+            });
+            
+            // Projects
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('Recent Projects', 35, 370);
+            
+            const projects = [['Website Redesign','Active'],['Mobile App','In Progress'],['Database Migration','Completed']];
+            projects.forEach((p,i) => {
+                ctx.fillStyle = 'white';
+                roundRect(ctx, 35, 400+i*55, 290, 40, 8);
+                ctx.fill();
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = '13px Arial';
+                ctx.fillText(p[0], 55, 428+i*55);
+                ctx.fillStyle = '#6c757d';
+                ctx.fillText(p[1], 280, 428+i*55);
+            });
+            
+            return c;
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x+r, y);
+            ctx.lineTo(x+w-r, y);
+            ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+            ctx.lineTo(x+w, y+h-r);
+            ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+            ctx.lineTo(x+r, y+h);
+            ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+            ctx.lineTo(x, y+r);
+            ctx.quadraticCurveTo(x, y, x+r, y);
+            ctx.closePath();
+        }
+
+        function generateAndDownload() {
+            const desktop = createDesktop();
+            const mobile = createMobile();
+            
+            // Show preview
+            document.getElementById('preview').innerHTML = `
+                <div class="preview-item">
+                    <h3>🖥️ Desktop</h3>
+                    <canvas id="deskPrev" width="640" height="360"></canvas>
+                </div>
+                <div class="preview-item">
+                    <h3>📱 Mobile</h3>
+                    <canvas id="mobPrev" width="180" height="320"></canvas>
+                </div>
+            `;
+            
+            document.getElementById('deskPrev').getContext('2d').drawImage(desktop, 0, 0, 640, 360);
+            document.getElementById('mobPrev').getContext('2d').drawImage(mobile, 0, 0, 180, 320);
+            
+            // Download
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.download = 'desktop.png';
+                link.href = desktop.toDataURL('image/png');
+                link.click();
+            }, 500);
+            
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.download = 'mobile.png';
+                link.href = mobile.toDataURL('image/png');
+                link.click();
+            }, 1000);
+            
+            document.getElementById('status').innerHTML = '<p class="success">✅ Screenshots generated and downloading!</p>';
+        }
+    </script>
+</body>
+</html>

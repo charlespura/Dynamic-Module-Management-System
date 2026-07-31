@@ -11,5 +11,32 @@ const mix = require('laravel-mix');
  |
  */
 
+// Compile assets - ONLY ONCE
 mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css');
+   .sass('resources/sass/app.scss', 'public/css');
+
+// Copy PWA assets
+mix.copy('resources/js/service-worker.js', 'public/service-worker.js');
+mix.copy('public/manifest.json', 'public/manifest.json');
+mix.copy('public/icons', 'public/icons');
+
+// Add Vue support
+mix.webpackConfig({
+    resolve: {
+        extensions: ['.js', '.vue'],
+        alias: {
+            'vue$': 'vue/dist/vue.esm.js'
+        }
+    }
+});
+
+// Version files in production
+if (mix.inProduction()) {
+    mix.version();
+}
+
+// Options
+mix.options({
+    processCssUrls: false,
+    clearConsole: true
+});

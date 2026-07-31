@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Mobile Screenshot</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f7fa; text-align: center; }
+        .btn { background: #667eea; color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-size: 18px; margin: 10px; }
+        .btn:hover { background: #5a67d8; }
+        .preview { margin-top: 20px; }
+        .success { color: #28a745; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <h1>📱 Generate Mobile Screenshot</h1>
+    <button class="btn" onclick="generateMobile()">📱 Generate & Download Mobile Screenshot</button>
+    <div id="status"></div>
+    <div class="preview" id="preview"></div>
+
+    <script>
+        function generateMobile() {
+            const c = document.createElement('canvas');
+            c.width = 360;
+            c.height = 640;
+            const ctx = c.getContext('2d');
+
+            // Background gradient
+            const grad = ctx.createLinearGradient(0, 0, 360, 640);
+            grad.addColorStop(0, '#667eea');
+            grad.addColorStop(1, '#764ba2');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 360, 640);
+
+            // Phone frame
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 20;
+            ctx.fillStyle = '#1a1a1a';
+            roundRect(ctx, 10, 10, 340, 620, 30);
+            ctx.fill();
+
+            // Screen
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = '#f5f7fa';
+            roundRect(ctx, 20, 20, 320, 600, 20);
+            ctx.fill();
+
+            // Status bar
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(20, 20, 320, 35);
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.fillText('9:41', 35, 48);
+
+            // Header
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(20, 55, 320, 45);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('System', 35, 85);
+
+            // Dashboard title
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('Dashboard', 35, 140);
+
+            // Stats cards
+            const stats = [
+                ['Employees', '125', '#667eea'],
+                ['Modules', '12', '#56ab2f'],
+                ['Users', '8', '#f7971e']
+            ];
+
+            stats.forEach((s, i) => {
+                const y = 170 + i * 70;
+                ctx.fillStyle = s[2];
+                roundRect(ctx, 35, y, 290, 55, 10);
+                ctx.fill();
+                ctx.fillStyle = 'white';
+                ctx.font = '14px Arial';
+                ctx.fillText(s[0], 55, y + 25);
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText(s[1], 290, y + 28);
+            });
+
+            // Projects section
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('Recent Projects', 35, 400);
+
+            const projects = [
+                ['Website Redesign', 'Active'],
+                ['Mobile App', 'In Progress'],
+                ['Database Migration', 'Completed']
+            ];
+
+            projects.forEach((p, i) => {
+                const y = 430 + i * 55;
+                ctx.fillStyle = 'white';
+                roundRect(ctx, 35, y, 290, 40, 8);
+                ctx.fill();
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = '13px Arial';
+                ctx.fillText(p[0], 55, y + 28);
+                ctx.fillStyle = '#6c757d';
+                ctx.font = '12px Arial';
+                ctx.fillText(p[1], 280, y + 28);
+            });
+
+            // Bottom navigation
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(20, 590, 320, 30);
+            ctx.fillStyle = '#8aa4b8';
+            ctx.font = '12px Arial';
+            ['Home', 'Projects', 'Settings'].forEach((item, i) => {
+                ctx.fillText(item, 60 + i * 90, 612);
+            });
+
+            // Show preview
+            const preview = document.getElementById('preview');
+            preview.innerHTML = `
+                <div>
+                    <h3>📱 Mobile Screenshot (360x640)</h3>
+                    <canvas id="mobilePreview" width="360" height="640" style="border: 2px solid #ddd; border-radius: 12px;"></canvas>
+                    <br><br>
+                    <button class="btn" onclick="downloadMobile()">⬇️ Download Mobile Screenshot</button>
+                </div>
+            `;
+
+            const previewCanvas = document.getElementById('mobilePreview');
+            previewCanvas.getContext('2d').drawImage(c, 0, 0);
+
+            // Store for download
+            window.mobileCanvas = c;
+
+            document.getElementById('status').innerHTML = '<p class="success">✅ Mobile screenshot generated! Click download to save.</p>';
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        function downloadMobile() {
+            if (!window.mobileCanvas) {
+                alert('Please generate the screenshot first!');
+                return;
+            }
+            const link = document.createElement('a');
+            link.download = 'mobile.png';
+            link.href = window.mobileCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Auto-generate on load
+        window.onload = generateMobile;
+    </script>
+</body>
+</html>

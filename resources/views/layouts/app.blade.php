@@ -7,6 +7,28 @@
     <title>{{ config('app.name', 'Dynamic Module System') }}</title>
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <!-- PWA Meta Tags -->
+<link rel="manifest" href="{{ asset('manifest.json') }}">
+<meta name="theme-color" content="#667eea">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DMS">
+<link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}">
+
+<!-- PWA Service Worker -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(function(registration) {
+                    console.log('Service Worker registered:', registration);
+                })
+                .catch(function(error) {
+                    console.log('Service Worker registration failed:', error);
+                });
+        });
+    }
+</script>
     @stack('styles')
 </head>
 <body>
